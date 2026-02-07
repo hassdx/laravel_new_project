@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Polyfill\Uuid\Uuid;
 
 return new class extends Migration
 {
@@ -11,8 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('companies', function (Blueprint $table) {
-            //
+        Schema::create('companies', function (Blueprint $table) {
+            $table->Uuid('id')->primary();
+            $table->string('name');
+            $table->string('address');
+            $table->string('industry');     
+            $table->string('website')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            // Corrected relationship: 
+       
+            $table->foreignUuid('ownerId')->constrained('users')->onDelete('restrict');
         });
     }
 
@@ -21,8 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('companies', function (Blueprint $table) {
-            //
-        });
+      Schema::dropIfExists('companies');
     }
 };

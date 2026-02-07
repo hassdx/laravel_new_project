@@ -6,21 +6,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuids;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -46,15 +51,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function resumes(){
+    public function resumes()
+    {
         return $this->hasMany(Resume::class, 'userId', 'id');
     }
 
-    public function jobApplications(){
+    public function jobApplications()
+    {
         return $this->hasMany(jobApplication::class, 'userId', 'id');
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->hasOne(jobVacancy::class, 'ownerId', 'id');
     }
 }

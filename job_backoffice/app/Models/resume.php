@@ -12,7 +12,7 @@ class resume extends Model
     
         use HasFactory, HasUuids, SoftDeletes;
     
-        protected $table = 'resume';
+        protected $table = 'resumes';
     
         public $keyType = 'string';
     

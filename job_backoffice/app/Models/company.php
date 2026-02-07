@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class company extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUlids, SoftDeletes;
 
     protected $table = 'companies';
 
@@ -22,7 +22,8 @@ class company extends Model
         'name',
         'address',
         'industry',
-        'ownerid',
+        'website',
+        'ownerId',
     ];
     protected $dates = [
         'deleted_at',
@@ -37,12 +38,16 @@ class company extends Model
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'ownerid', 'id');
+        return $this->belongsTo(User::class, 'ownerId', 'id');
     }
 
-    public function jobvacancies(){
-        return $this->hasMany(jobVacancy::class, 'categoryId', 'id');
+    public function jobVacancies()
+    {
+        return $this->hasMany(JobVacancy::class, 'companyId', 'id'); 
     }
 
+    public function jobApplications()
+    {
+        return $this->hasManyThrough(JobApplication::class, JobVacancy::class, 'companyId', 'id'); 
+    }
 }
-

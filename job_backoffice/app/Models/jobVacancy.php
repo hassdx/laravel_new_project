@@ -12,7 +12,7 @@ class jobVacancy extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
-    protected $table = 'jobVacancies';
+    protected $table = 'job_vacancies';
 
     public $keyType = 'string';
 
@@ -24,7 +24,7 @@ class jobVacancy extends Model
         'location',
         'salary',
         'type',
-        'jobCategory',
+        'jobCategoryId',
         'companyId',
 
     ];
