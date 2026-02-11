@@ -15,6 +15,7 @@
         <div>
             <div class="w-full mx-auto p-6 bg-white rounded-lg shadow">
                 <h3 class="text-lg font-large ">Company information</h3>
+                <p><strong>Owner:</strong> {{ $company->owner->name }}</strong></p>
                 <p><strong>Address:</strong> {{ $company->address }}</p>
                 <p><strong>Industry:</strong> {{ $company->industry }}</p>
                 <p><strong>Website:</strong> <a class="text-blue-500 hover:text-blue-700 underline"
@@ -23,7 +24,7 @@
 
             {{-- edit and archive buttons --}}
             <div class="mt-4 flex justify-end space-x-4 mb-6">
-                <a href="{{ route('companies.edit', $company->id) }}"
+                <a href="{{ route('companies.edit', ['company' => $company->id, 'redirectToList' => 'false']) }}"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
 
                 <form action="{{ route('companies.destroy', $company->id) }}" method="POST"
@@ -75,7 +76,7 @@
                                     <td class="px-4 py-2">{{ $job->type }}</td>
                                     <td class="px-4 py-2">{{ $job->location }}</td>
                                     <td class="px-4 py-2">
-                                        <a href="{{ route('job-vacancy.show', $job->id) }}"
+                                        <a href="{{ route('job-vacancies.show', $job->id) }}"
                                             class="text-blue-500 hover:text-blue-700">View</a>
                                     </td>
                                 </tr>

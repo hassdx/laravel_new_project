@@ -13,6 +13,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\resume;
 use App\Models\jobApplication;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -72,24 +73,34 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach ($jobData['jobVacancies'] as $job) {
-            //get the created company
-            $company = Company::where('name', $job['company'])->firstOrFail();
-
-            //get the created job category
-            $jobCategory = jobCategory::where('name', $job['category'])->firstOrFail();
-
-            JobVacancy::firstOrCreate([
-                'title' => $job['title'],
-                'companyId' => $company->id,
-
-            ],     [
-                'description' => $job['description'],
-                'location' => $job['location'],
-                'type' => $job['type'],
-                'salary' => $job['salary'],
-                'jobCategoryId' => $jobCategory->id,
-            ]);
+            // 1. Find the Company (Case-insensitive)
+            $company = Company::where('name', trim($job['company']))->first();
+        
+            // 2. Find the Job Category (Case-insensitive)
+            $category = jobCategory::where('name', trim($job['category']))->first();
+        
+            if ($company && $category) {
+                jobVacancy::updateOrCreate(
+                    [
+                        'title' => $job['title'], 
+                        'companyId' => $company->id
+                    ], 
+                    [
+                        'description'   => $job['description'],
+                        'location'      => $job['location'],
+                        // Normalize the 'type' to match your Migration Enum
+                        'type'          => $this->formatJobType($job['type']),
+                        'salary'        => $job['salary'],
+                        'jobCategoryId' => $category->id,
+                    ]
+                );
+            } else {
+                if (!$company) logger()->error("Seeder Error: Company '{$job['company']}' not found for job '{$job['title']}'");
+                if (!$category) logger()->error("Seeder Error: Category '{$job['category']}' not found for job '{$job['title']}'");
+            }
         }
+        
+   
 
         //create job Applications
         foreach ($jobApplications['jobApplications'] as $application) {
@@ -132,4 +143,14 @@ class DatabaseSeeder extends Seeder
             ]);
         }
     }
+         // Add this helper function at the bottom of your DatabaseSeeder class
+         private function formatJobType($type) {
+            $type = strtolower($type);
+            if ($type === 'full-time') return 'Full-Time';
+            if ($type === 'remote') return 'remote';
+            if ($type === 'hybrid') return 'Hybrid';
+            if ($type === 'contract') return 'Contract';
+            return 'Full-Time'; // Default fallback
+        }
 }
+

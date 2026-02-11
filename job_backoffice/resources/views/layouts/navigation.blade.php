@@ -17,7 +17,7 @@
             {{ __('Companies') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('job-application.index')" :active="request()->routeIs('job-application.*')">
+        <x-nav-link :href="route('job-applications.index')" :active="request()->routeIs('job-application.*')">
             {{ __('Applications') }}
         </x-nav-link>
 
@@ -25,7 +25,7 @@
             {{ __('Categories') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('job-vacancy.index')" :active="request()->routeIs('job-vacancy.*')">
+        <x-nav-link :href="route('job-vacancies.index')" :active="request()->routeIs('job-vacancy.*')">
             {{ __('Job Vacancies') }}
         </x-nav-link>
 

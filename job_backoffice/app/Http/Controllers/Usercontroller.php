@@ -3,15 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\User;
+use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Hash;
 class Usercontroller extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('user.index');
+        //active
+        $query = User::latest();
+
+        //archived
+        if ($request->input('archived') == 'true') {
+            $query->onlyTrashed();
+        }
+        $users = $query->paginate(10)->onEachSide(1);
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -43,15 +53,22 @@ class Usercontroller extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserUpdateRequest $request, string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        
+        $user->update([
+            'password' => $request->password,
+        ]);
+    
+        return redirect()->route('users.index')->with('success', 'Password updated!');
     }
 
     /**
@@ -59,6 +76,15 @@ class Usercontroller extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function restore(string $id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->restore();
+        return redirect()->route('users.index', ['archived' => 'true'])->with('success', 'User restored successfully.');
     }
 }

@@ -22,10 +22,13 @@ class CompanyCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:job_categories,name',
-            'address' => 'required|string|max:250',
-            'industry' => 'required|string|max:255',
-            'website' => 'nullable|string|url|max:255',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'industry' => 'required|string',
+            'website' => 'nullable|url',
+            'owner_name' => 'required|string|max:255',
+            'owner_email' => 'required|email|unique:users,email',
+            'owner_password' => 'required|string|min:8',
         ];
     }
 
@@ -45,6 +48,18 @@ class CompanyCreateRequest extends FormRequest
             'website.url' => 'The website must be a valid URL.',
             'wensite.max' => 'The website may not be greater than 255 characters.',
             'website.string' => 'The website must be a string.',
+
+            // onwner deatails
+            'owner_name.required' => 'The owner name is required.',
+            'owner_name.string' => 'The owner name must be a string.',
+            'owner_name.max' => 'The owner name may not be greater than 255 characters.',
+            'owner_email.required' => 'The owner email is required.',
+            'owner_email.email' => 'The owner email must be a valid email address.',
+            'owner_email.max' => 'The owner email may not be greater than 255 characters.',
+            'owner_email.unique' => 'The owner email has already been taken.',
+            'owner_password.required' => 'The owner password is required.',
+            'owner_password.string' => 'The owner password must be a string.',
+            'owner_password.min' => 'The owner password must be at least 8 characters.',
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Faker\Provider\Company;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,7 +46,7 @@ class jobVacancy extends Model
     public function company(){
         return $this->belongsTo(Company::class, 'companyId', 'id');
     }
-    public function jobapplications(){
+    public function jobApplications(){
         return $this->hasMany(jobApplication::class, 'jobvacancyId', 'id');
     }
 

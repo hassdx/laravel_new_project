@@ -19,13 +19,16 @@ Route::middleware('auth')->group(function () {
     Route::put('/companies/{id}/restore', [Companycontroller::class, 'restore'])->name('companies.restore');
     
     Route::resource('users', Usercontroller::class);
+    Route::put('/users/{id}/restore', [Usercontroller::class, 'restore'])->name('users.restore');
 
     Route::resource('job-category', JobCategorycontroller::class);
     Route::put('/job-category/{id}/restore', [JobCategorycontroller::class, 'restore'])->name('job-category.restore');
 
-    Route::resource('job-vacancy', JobVacancycontroller::class);
+    Route::resource('job-vacancies', JobVacancycontroller::class);
+    Route::put('/job-vacancies/{id}/restore', [JobVacancycontroller::class, 'restore'])->name('job-vacancies.restore');
 
-    Route::resource('job-application', JobApplicatoncontroller::class);
+    Route::resource('job-applications', JobApplicatoncontroller::class);
+    Route::put('/job-applications/{id}/restore', [JobApplicatoncontroller::class, 'restore'])->name('job-applications.restore');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
