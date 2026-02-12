@@ -12,7 +12,7 @@ use App\Http\Controllers\JobApplicatoncontroller;
 
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'role:admin, company-owner')->group(function () {
     Route::get('/', [Dashbordcontroller::class, 'index'])->name('dashboard');
     
     Route::resource('companies', Companycontroller::class);

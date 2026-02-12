@@ -23,6 +23,7 @@ class jobVacancy extends Model
         'location',
         'salary',
         'type',
+        'veiwCount',
         'jobCategoryId',
         'companyId',
 
