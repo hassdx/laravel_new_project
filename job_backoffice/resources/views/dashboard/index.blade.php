@@ -47,12 +47,14 @@
                     <thead>
                         <tr>
                             <th class=" py-2 text-gray-500">Job Title </th>
-                            <th class=" py-2 text-gray-500">Company</th>
+                            @if (auth()->user()->role == 'admin')
+                                <th class=" py-2 text-gray-500">Company</th>
+                            @endif
                             <th class=" py-2 text-gray-500">Total Applications</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach ($mostAppliedJobs as $job)
+                        @foreach ($analytics['mostAppliedJobs'] as $job)
                             <tr>
                                 <th class="py-4">{{ $job->title }}</th>
                                 <th class="py-4">{{ $job->company->name }}</th>
@@ -83,7 +85,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach ($conversionRates as $conversionRate)
+                        @foreach ($analytics['conversionRates'] as $conversionRate)
                             <tr>
                                 <th class="py-4">{{ $conversionRate->title }}</th>
                                 <th class="py-4">{{ $conversionRate->viewCount }}</th>

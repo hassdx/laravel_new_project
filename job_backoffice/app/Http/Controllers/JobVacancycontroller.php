@@ -15,14 +15,22 @@ class JobVacancycontroller extends Controller
      */
     public function index(Request $request)
     {
-        //active
-        $query = JobVacancy::latest();
-
-        //archived
-        if ($request->input('archived') == 'true') {
-            $query->onlyTrashed();
+        // Start the query
+        $query = JobVacancy::query();
+        
+        if(auth()->user()->role == 'company-owner') {
+            $query->where('companyId', auth()->user()->company->id);
         }
-        $jobVacancies = $query->paginate(10)->onEachSide(1);
+
+    
+        // Check if we want archived items
+        if ($request->input('archived') == 'true') {
+            $query = JobVacancy::onlyTrashed(); // Assign the trashed query to $query
+        }
+    
+        // Apply sorting and pagination
+        $jobVacancies = $query->latest()->paginate(10)->onEachSide(1);
+    
         return view('job-vacancy.index', compact('jobVacancies'));
     }
 

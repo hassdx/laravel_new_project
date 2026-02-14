@@ -12,25 +12,83 @@ class Dashbordcontroller extends Controller
 {
     public function index()
     {
-        // last 30 days active users
-        $activeUsers = User::where('last_log_at', '>=', now()->subDays(30))
-            ->where('role', 'job-seeker')->count();
+        if(auth()->user()->role == 'admin'){
+            $analytics = $this->adminDashboard();
+        }else{
+            $analytics = $this->companyOnwerDashboard();
+        }
 
-        // total jobs  not delleted
+        return view('dashboard.index', compact(['analytics']));
+    }
 
-        $totalJobs = JobVacancy::whereNull('deleted_at')->count();
+    private function adminDashboard()
+    {
+          // last 30 days active users
+          $activeUsers = User::where('last_log_at', '>=', now()->subDays(30))
+          ->where('role', 'job-seeker')->count();
 
-        // total applications not deleted
-        $totalApplications = jobApplication::whereNull('deleted_at')->count();
+      // total jobs  not delleted
 
-        $analytics = [
+      $totalJobs = JobVacancy::whereNull('deleted_at')->count();
+
+      // total applications not deleted
+      $totalApplications = jobApplication::whereNull('deleted_at')->count();
+
+
+
+      // most appleid jobs
+      $mostAppliedJobs = JobVacancy::withCount('jobApplications as totalCount')
+          ->whereNull('deleted_at')
+          ->orderByDesc('totalCount')
+          ->take(5)
+          ->get();
+
+      // conversion rates
+      $conversionRates = JobVacancy::withCount('jobApplications as totalCount')
+          ->having('totalCount', '>', 0)
+          ->orderByDesc('totalCount')
+          ->take(5)
+          ->get()
+          ->map(function ($job) {
+              if ($job->viewCount > 0) {
+                  $job->conversionRate = round(($job->totalCount / $job->viewCount) * 100, 2);
+              } else {
+                  $job->conversionRate = 0;
+              }
+              return $job;
+          });
+
+          $analytics = [
             'activeUsers' => $activeUsers,
             'totalJobs' => $totalJobs,
             'totalApplications' => $totalApplications,
+            'mostAppliedJobs' => $mostAppliedJobs,
+            'conversionRates' => $conversionRates
         ];
 
-        // most appleid jobs
+          return $analytics;
+    }
+
+    private function companyOnwerDashboard()
+    {
+        $company = auth()->user()->company;
+
+        //filter active users by appliying jobs
+        $activeUsers = User::where('last_log_at', '>=', now()->subDays(30))
+        ->where('role', 'job-seeker')
+        ->whereHas('jobApplications', function ($query) use ($company) {
+            $query->whereIn('jobVacancyId', $company->JobVacancies->pluck('id')); 
+        })->count();
+
+        //total jobs of the company
+        $totalJobs = $company->JobVacancies->count();
+
+        //total applications of the company
+        $totalApplications = jobApplication::whereIn('jobVacancyId', $company->JobVacancies->pluck('id'))->count();
+
+        // most applied jobs
         $mostAppliedJobs = JobVacancy::withCount('jobApplications as totalCount')
+            ->where('companyId', $company->id)
             ->whereNull('deleted_at')
             ->orderByDesc('totalCount')
             ->take(5)
@@ -38,6 +96,7 @@ class Dashbordcontroller extends Controller
 
         // conversion rates
         $conversionRates = JobVacancy::withCount('jobApplications as totalCount')
+            ->where('companyId', $company->id)
             ->having('totalCount', '>', 0)
             ->orderByDesc('totalCount')
             ->take(5)
@@ -51,6 +110,20 @@ class Dashbordcontroller extends Controller
                 return $job;
             });
 
-        return view('dashboard.index', compact(['analytics', 'mostAppliedJobs', 'conversionRates']));
+
+
+
+        $analytics = [
+            'activeUsers' => $activeUsers,
+            'totalJobs' => $totalJobs,
+            'totalApplications' => $totalApplications,
+            'mostAppliedJobs' => $mostAppliedJobs,
+            'conversionRates' => $conversionRates
+
+        ];
+
+        return $analytics;
+
     }
+      
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\JobApplicationUpdateRequest;
 use App\Models\jobApplication;
 use Illuminate\Http\Request;
+use App\Models\jobVacancy;
 
 class JobApplicatoncontroller extends Controller
 {
@@ -13,16 +14,22 @@ class JobApplicatoncontroller extends Controller
      */
     public function index(Request $request)
     {
-       //active
-       $query = jobApplication::latest();
+        //active
+        $query = jobApplication::latest();
 
-       //archived
-       if ($request->input('archived') == 'true') {
-           $query->onlyTrashed();
-       }
-       $jobVacancies = $query->paginate(10)->onEachSide(1);
-       return view('job-vacancy.index', compact('jobVacancies'));
-   }   
+        if (auth()->user()->role == 'company-owner') {
+            $query->whereHas('jobvacancies', function ($query) {
+                $query->where('companyId', auth()->user()->company->id);
+            });
+        }
+
+        //archived
+        if ($request->input('archived') == 'true') {
+            $query->onlyTrashed();
+        }
+        $jobVacancies = $query->paginate(10)->onEachSide(1);
+        return view('job-vacancy.index', compact('jobVacancies'));
+    }
 
 
 

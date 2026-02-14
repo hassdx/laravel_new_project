@@ -9,20 +9,21 @@
     <div class="overflow-x auto p-6">
         <x-toast-notification />
 
-        <div class="flex justify-end items-center mb-4">
+        <div class="flex justify-end items-center mb-4 ">
             <div>
 
                 @if (request()->input('archived') == 'true')
 
                     {{-- active --}}
                     <a href="{{ route('job-vacancies.index') }}"
-                        class="bg-black hover:bg-gray-700-700 text-white font-bold py-2 px-4 rounded">Active Job
+                        class="bg-black hover:bg-gray-700-700 text-white font-bold py-2 px-4  rounded">Active Job
                         Vacancies</a>
 
                 @else
                     {{-- archived --}}
                     <a href="{{ route('job-vacancies.index', ['archived' => 'true']) }}"
-                        class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Archived Job Vacancies
+                        class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-2 mr-4 rounded">Archived Job
+                        Vacancies
                     </a>
 
                 @endif
@@ -43,7 +44,9 @@
             <thead>
                 <tr>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Title</th>
-                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Company</th>
+                    @if(auth()->user()->role == 'admin')
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Company</th>
+                    @endif
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Location</th>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Type</th>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Salary</th>
@@ -64,9 +67,13 @@
 
 
                         @endif
+                        
+                        @if (auth()->user()->role == 'admin')
+                            <td class="px-6 py-4 text-gray-800">{{ $jobVacancy->company?->name  }}</td>
 
-                        <td class="px-6 py-4 text-gray-800">{{ $jobVacancy->company?->name  }}</td>
-                        <td class="px-6 py-4 text-gray-800">{{ $jobVacancy->locatuion }}</td>
+
+                        @endif
+                        <td class="px-6 py-4 text-gray-800">{{ $jobVacancy->location }}</td>
                         <td class="px-6 py-4 text-gray-800">{{ $jobVacancy->type }}</td>
                         <td class="px-6 py-4 text-gray-800">$ {{ number_format($jobVacancy->salary, 2)}}</td>
                         <td>

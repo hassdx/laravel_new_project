@@ -1,3 +1,14 @@
+@php
+    $role = auth()->user()->role;
+    
+    if ($role === 'admin') {
+        // Use the object directly; Laravel will extract the ID automatically
+        $formAction = route('companies.update', $company); 
+    } else if ($role === 'company-owner') {
+        $formAction = route('my-company.update');
+    }
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -8,8 +19,8 @@
     <div class="overflow-x-auto p-6">
         <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
             <form
-                action="{{ route('companies.update', ['company' => $company->id, 'redirectToList' => request('redirectToList')]) }}"
-                class="w-full') }}" method="POST">
+            {{-- component abouve formAction --}}
+                action="{{ $formAction }}" class="w-full" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -68,7 +79,7 @@
 
 
                     {{-- company Owner --}}
-                    <div class="mb-4 p-6 bg-gray-50 border-gray-100 rounded-lg shadow">
+                    <div class="mb-4 p-2 bg-gray-50">
                         <h3 class="text-lg font-large  ">Company Owner</h3>
                         <p class="text-sm mb-2"> slelect the Owner of the company</p>
 
@@ -141,7 +152,12 @@
 
                 </div>
                 <div class="flex justify-end items-center">
-                    <a href="{{ route('companies.index') }}" class="text-gray-700 mr-2 ">Cancel</a>
+                    @if (auth()->user()->role == 'admin')
+                        <a href="{{ route('companies.index') }}" class="text-gray-700 mr-2 ">Cancel</a>
+                     @elseif (auth()->user()->role == 'company-owner')
+                        <a href="{{ route('my-company.show') }}" class="text-gray-700 mr-2 ">Cancel</a>   
+                    
+                    @endif
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Update Company
 

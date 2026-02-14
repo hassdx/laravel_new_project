@@ -1,0 +1,27 @@
+{
+    "name": "job/shared",
+    "description": "this is shered pach=kage to have shared logic of models",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "hassan elhouari",
+            "email": "elhouhass@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "config": {
+        "audit": {
+            "ignore": ["PKSA-8qx3-n5y5-vvnd"]
+        }
+    }
+}
